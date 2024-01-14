@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db:
+    container_name: postgres_container
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=app
+
+  app:
+    restart: always
+    depends_on:
+      - db
+    container_name: nodejs_container
+    build: .
+    # links:
+    #   - db
+    ports:
+      - "8080:8080"
+    # env_file:
+    #   - dev.env
+    environment:
+      ENV: "DEV"
+      DATABASE_URL: postgresql://postgres:root@db:5432/app?schema=public
+    develop:
+      watch:
+        - action: rebuild
+          path: .
